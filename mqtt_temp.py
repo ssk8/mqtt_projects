@@ -3,7 +3,7 @@
 import paho.mqtt.publish as publish
 from time import sleep
 from smbus2 import SMBus
-from bmp280 import BMP280
+from bme280 import BME280
 
 def get_temp():
     probe_adress = "/sys/bus/w1/devices/28-0000067040a8/w1_slave"
@@ -18,8 +18,9 @@ def loop():
     while 1:
         measurements = dict()
         measurements['temp'] = get_temp()
-        measurements['temperature'] = round(bmp280.get_temperature(), 2)
-        measurements['pressure'] = round(bmp280.get_pressure(), 2)
+        measurements['temperature'] = round(bme280.get_temperature(), 2)
+        measurements['pressure'] = round(bme280.get_pressure(), 2)
+        measurements['humidity'] = round(bme280.get_humidity(), 2)
         msgs= list()
         for topic, payload in measurements.items():
             msgs.append({"topic":f'piz/{topic}', "payload":payload})
@@ -30,5 +31,5 @@ def loop():
 
 if __name__ == "__main__":
     bus = SMBus(1)
-    bmp280 = BMP280(i2c_dev=bus)
+    bme280 = BME280(i2c_dev=bus)
     loop()
